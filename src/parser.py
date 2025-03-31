@@ -72,8 +72,12 @@ def parse_frame(buffer):
         curr_start_of_data = first_delim + len(BIN_STR_DELIMITER)
         data = buffer[curr_start_of_data:]
 
+        print(f"first_delim: {first_delim}, length: {length}, data: {data}")
+
         for _ in range(length):
           item, size = parse_frame(data)
+
+          print(f"item: {item}, size: {size}")
 
           if item is None or size == 0:
             return None, 0 
@@ -81,6 +85,8 @@ def parse_frame(buffer):
           array.append(item)
           data = data[size:]
           curr_start_of_data += size
+
+        print(f"array: {array}")
 
         return Array(data=array, length=length), curr_start_of_data
 

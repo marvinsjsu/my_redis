@@ -1,11 +1,13 @@
 import socket
 
 from .parser import parse_frame
+from .handler import ConnectionHandler
 from .constants import HOST, PORT, BUFFER_SIZE
 
 class Server:
   def __init__(self):
     self.sock = None
+    self.handler = ConnectionHandler()
 
   def start(self):
     self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -20,7 +22,7 @@ class Server:
         self.handle_connection(connection)
 
   def handle_connection(self, connection):
-    # buffer = b""
+    buffer = b""
 
     with connection:
       while True:
@@ -29,16 +31,13 @@ class Server:
         if not data:
           break
 
-        print(f"data: {data}")
+        buffer += data
+        print(f"buffer: {buffer}, data: {data}")
 
-        # buffer += data
-        frame, size = parse_frame(data)
-
-        print(f"handle_connection frame: {frame}, size: {size}")
+        frame, size = parse_frame(buffer)
         
         if frame:
           print(f"handle_connection frame: {frame}, size: {size}")
-          # response = self.handler.handle(frame)
-          # connection.sendall(response)
-          # buffer = buffer[size:]
+          response = self.handler.handle(frame)
+          connection.sendall(response)
 
